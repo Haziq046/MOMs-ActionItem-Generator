@@ -1,16 +1,20 @@
 import streamlit as st
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import HumanMessage
 import os
 from dotenv import load_dotenv
-from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT  # Import Anthropic's API
 
 # Load environment variables from the .env file
 load_dotenv()
 
-# Access the Claude API key
-claude_api_key = os.getenv('CLAUDE_API_KEY') or st.secrets["claude"]["api_key"]
+# Access the OpenAI API key
+openai_api_key = os.getenv('OPENAI_API_KEY') or st.secrets["openai"]["api_key"]
 
-# Initialize the Claude client
-claude = Anthropic(api_key=claude_api_key)
+# Now you can use the openai_api_key in your application
+print(f"Your OpenAI API key is: {openai_api_key}")
+
+# Initialize the LangChain ChatOpenAI instance
+chat = ChatOpenAI(model="gpt-4o-2024-08-06", openai_api_key=openai_api_key)
 
 # Streamlit app title
 st.title("Minutes of Meeting & Action Item Extractor")
@@ -39,7 +43,7 @@ if st.button("Generate MOM and Action Items"):
             # Calculate the max word count for the MOM and Action Items (10% of input length)
             max_word_count = int(len(meeting_text.split()) * 0.10)
 
-            # Define the detailed prompt for Claude API with zero-shot instructions
+            # Define the detailed prompt for LangChain ChatOpenAI with zero-shot instructions
             prompt = (f"As a Natural Language Processing expert, please generate a structured summary from the following meeting notes. "
                       f"The summary should include both Minutes of Meeting (MOM) and Action Items, adhering to the following guidelines:\n\n"
                       f"1. **Concise Output:**\n"
@@ -56,16 +60,14 @@ if st.button("Generate MOM and Action Items"):
                       f"Generate the MOM and Action Items based on these instructions.")
 
             try:
-                # Use the Claude API to get a response
-                response = claude.completions.create(
-                    model="claude-v1",
-                    prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
-                    max_tokens=1000,  # Adjust as needed
-                    temperature=0.7
-                )
+                # Create a message for the conversation using HumanMessage schema
+                messages = [HumanMessage(content=prompt)]
+
+                # Generate response using LangChain ChatOpenAI
+                response = chat(messages)
 
                 # Extract the response text
-                output = response['completion'].strip()
+                output = response.content.strip()
 
                 # Display the results
                 st.subheader("Minutes of the Meeting (MOM)")
