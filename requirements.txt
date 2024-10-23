@@ -3,7 +3,5 @@ langchain
 langchain-openai
 langchain-community
 openai 
-duckduckgo-search
 pandas
 python-dotenv
-anthropic
