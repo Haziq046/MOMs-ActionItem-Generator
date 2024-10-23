@@ -17,7 +17,7 @@ print(f"Your OpenAI API key is: {openai_api_key}")
 chat = ChatOpenAI(model="gpt-4o-2024-08-06", openai_api_key=openai_api_key)
 
 # Streamlit app title
-st.title("Minutes of Meeting & Action Item Extractor")
+st.title("AI Model Generating Minutes of Meeting (MoM) and Action Items")
 
 # Input text box for meeting text with placeholder instead of pre-filled text
 meeting_text = st.text_area(
